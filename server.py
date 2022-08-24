@@ -17,4 +17,4 @@ def serve():
 
 
 if __name__ == '__main__':
-    app.run(threaded=True)
+    app.run(threaded=True, port=int(os.environ.get('PORT', 5000)))
