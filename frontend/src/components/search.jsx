@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import DatePicker from "react-datepicker";
 import dateFormat from "dateformat";
 import {startOfWeek, endOfWeek} from 'date-fns'
+import axios from 'axios'
 
 const Search = () => {
     const [dateRange, setDateRange] = useState([
@@ -11,12 +12,28 @@ const Search = () => {
         endOfWeek(new Date(), {weekStartsOn: 6})
     ]);
     const [startDate, endDate] = dateRange;
-    
-    console.log(dateFormat(startDate, "isoDateTime").split("T")[0] + "\n" + dateFormat(endDate, "isoDateTime").split("T")[0])
+
+    const formData = data => dateFormat(data, "isoDateTime").split("T")[0]
+
+    const handleSubmit = e => {
+        e.preventDefault();  
+        var data = {
+            "start_date": formData(startDate),
+            "final_date": formData(endDate)
+        }
+        console.log(data)
+
+        // axios.post('http://127.0.0.1:5000/api/get_csv', data, {
+        //     headers: {
+        //         "Access-Control-Allow-Origin": "*",
+        //         'Content-Type': "multipart/from-data"
+        //     }
+        // }).then(res =>  console.log(res.data)).catch(err => console.log(err))
+    }
 
     return (
         <div className='search'>
-            <Form>
+            <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                     <Form.Label>Выберете даты</Form.Label>
                     <DatePicker
