@@ -1,0 +1,24 @@
+$base-color: #00A499;
+$white-color: #fff;
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+nav {
+    background-color: $base-color;
+    a {
+        color: $white-color !important;
+    }
+    button {
+        color: $base-color !important;
+        background-color: $white-color !important;
+        border-color: $white-color !important;
+    }
+    &>div {
+        display: flex;
+        justify-content: space-between;
+    }
+}
