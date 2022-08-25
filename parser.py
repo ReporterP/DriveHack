@@ -18,7 +18,8 @@ def update_report(data: dict, report_path = r'./report_data.csv'):
 
     # Дополнение отчёта данными
     # Словарь в DF, а DF + DF
-    report_data = pd.concat([report_data, pd.DataFrame(data)], ignore_index=True)
+    # print(pd.DataFrame(data.items())) # , ignore_index=True
+    report_data = pd.concat([report_data, pd.DataFrame(list(data.items()), columns=['company_name', 'mentioned_times'] )])
 
     # TODO:
     # Для оптимизации имеет смысл делать сохранение в csv, только тогда, когда получен итоговый DF
