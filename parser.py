@@ -1,29 +1,14 @@
 import requests as req
 from bs4 import BeautifulSoup as bs
-from datetime import datetime
-import pandas as pd  # для создания/дополнения файла отчёта через DataFrames
 import re
-from collections import ChainMap  # для обработки данных от парсеров сайта
+from datetime import datetime
 
 
-transport_st = []
-result = []
-other_st = []
 
-# load the list of transport startups
-correct_list = 'https://transport.startups-list.com/'
-def list_load(url):
-    r = req.get(url)
-    html = bs(r.text, 'html.parser')
-    for new in html.select('.card'):
-        name = new.select('h1')[0].text.strip()
-        transport_st.append(name)
+import pandas as pd  # для создания/дополнения файла отчёта через DataFrames
 
-
-# resourses
-url = ['https://techcrunch.com/category/startups/', 'https://techstartups.com/category/latest-technology-news/transportation/', 'https://www.eu-startups.com/?s=transport']
-
-def update_report(data: ChainMap, report_path = r'./report_data.csv'):
+# Формирование отчёта из данных от парсеров
+def update_report(data: dict, report_path = r'./report_data.csv'):
     '''Extend existing report or create a new one'''
     if report_path == "":
         report_data = pd.DataFrame(
@@ -32,13 +17,27 @@ def update_report(data: ChainMap, report_path = r'./report_data.csv'):
         report_data = pd.read_csv(report_path)
 
     # Дополнение отчёта данными
-    for startup in data.maps:
-        report_data = pd.concat([report_data, pd.DataFrame(startup)], ignore_index=True)
+    # Словарь в DF, а DF + DF
+    report_data = pd.concat([report_data, pd.DataFrame(data)], ignore_index=True)
 
+    # TODO:
+    # Для оптимизации имеет смысл делать сохранение в csv, только тогда, когда получен итоговый DF
+    # Т.е. парсер прекратил свою работу.
     report_data.to_csv('report_data.csv', index=False)
 
+
+
+''' Парсеры сайтов'''
+
+def list_load(url):
+    r = req.get(url)
+    html = bs(r.text, 'html.parser')
+    for new in html.select('.card'):
+        name = new.select('h1')[0].text.strip()
+        transport_st.append(name)
+
 # parser
-def parser(url, transport_st, result, other_st):
+def parser(url, transport_st, other_st):
     list_load(correct_list)
 
     for u in url:
@@ -66,14 +65,13 @@ def parser(url, transport_st, result, other_st):
                     date = date.strftime("%Y-%m-%d")
                     for tr in transport_st:
                         if tr in title:
-                            result.append({"company_name": tr, "mentioned_at": date,})
+                            # ВЫЗОВ ФУНКЦИИ ОБНОВЛЕНИЯ ОТЧЁТА ПРЯМИКОМ ИЗ ПАРСЕРА
+                            update_report({"company_name": tr, "mentioned_at": date})
                             break
                     if 'startup' in title:
                         if '$' in title:
                             res = re.findall(r'(.*?) \w* [$]', title)
-                            result.append({"company_name": res, "mentioned_at": date})
-    data = ChainMap(result)
-    update_report(data)
+                            update_report({"company_name": res, "mentioned_at": date})
 
         # if url.index(u) == 2:
         #     for new in html.select('.td-module-meta-info'):
@@ -81,8 +79,14 @@ def parser(url, transport_st, result, other_st):
         #         date = new.select('.entry-date')[0].text.strip()
         #         print(title, data)
         #         break
-            
 
-# data_parser = parser(url, transport_st, result, other_st)
-parser(url, transport_st, result, other_st)
-# print(data_parser)
+transport_st = [] # транспортные стартапы
+other_st = [] # В будущем для проверки является ли стартап транспортным.
+
+# load the list of transport startups
+correct_list = 'https://transport.startups-list.com/'
+
+# resourses
+url = ['https://techcrunch.com/category/startups/', 'https://techstartups.com/category/latest-technology-news/transportation/', 'https://www.eu-startups.com/?s=transport']
+
+parser(url, transport_st, other_st)
