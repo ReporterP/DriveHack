@@ -55,6 +55,8 @@ const Search = props => {
                     }}
                     customInput={<CustomInput />}
                     dateFormat="dd.MM.yyyy"
+                    showMonthDropdown
+                    showYearDropdown
                     withPortal
                     />
                 </Form.Group>

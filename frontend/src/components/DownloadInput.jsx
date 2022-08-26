@@ -20,7 +20,7 @@ const DownloadInput = () => {
 
     return (
         <div className='DownloadInput'>
-            <Button onClick={getTransactionData}>Загрузить CSV</Button>
+            <Button onClick={getTransactionData}>Скачать CSV</Button>
             <CSVLink
                 data={transactionData}
                 filename='top.csv'
