@@ -38,7 +38,7 @@ const Search = props => {
         }
         console.log(data)
 
-        axios.post('http://127.0.0.1:5000/api/get_data', data, {
+        axios.post('https://tim-fs.herokuapp.com/api/get_data', data, {
             headers: {
                 "Access-Control-Allow-Origin": "*",
                 'Content-Type': "application/json"
