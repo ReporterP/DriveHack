@@ -1,7 +1,6 @@
 import requests as req
 from bs4 import BeautifulSoup as bs
 from datetime import datetime
-import pandas as pd  # для создания/дополнения файла отчёта через DataFrames
 import re
 
 # load the list of transport startups
@@ -13,7 +12,7 @@ import re
 #         name = new.select('h1')[0].text.strip()
 #         transport_st.append(name)
 
-# Парсинг данных в DataFrame с сохранением в csv по завершению
+# parser
 def parser(url, transport_st):
     # list_load(correct_list)
     for u in url:
@@ -58,7 +57,6 @@ def parser(url, transport_st):
                                     w += 1
                                 res = res.strip()
                                 if len(res):
-                                    
                                     print({"company_name": res, "mentioned_at": date})
                                     transport_st.append(res)
                 page += 1
@@ -87,19 +85,3 @@ title_selector = ['h5 > a', 'h3 > a']
 date_selector = ['.post_info_date', '.entry-date']
 
 parser(url, transport_st)
-
-
-# TODO: Оптимизация парсера
-# Парсер возращает новый DF, что содержит собранные данные.
-# Затем производится конкатенация полученного DF с DF из файла хранилища.
-# Результирующий DF сохраняется в csv.
-
-"""
-"""
-# Загрузка имеющегося отчёта в DF, для дополнения
-report_path = r'G:\GitHub repos\DriveHack\report_data.csv'
-report_data = pd.read_csv(report_path)
-
-# Дополнение DF данными из DF с результатами парсинга
-
-# Сохранение результирующего DF в csv
