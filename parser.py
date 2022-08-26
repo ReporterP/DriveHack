@@ -8,12 +8,12 @@ import re
 transport_st = []
 
 # resourses
-url = ['https://techstartups.com/category/latest-technology-news/transportation/', 'https://www.eu-startups.com/?s=transport', 'https://inc42.com/buzz/?s=transport%20startup', 'https://www.geekwire.com/?s=transport&orderby=relevance&order=DESC&post_type=post%2Cpage%2Cdevblog%2Cgeekwire_event%2Cgeekwire_picks%2Cspecial_coverage%2Csponsor_post&category_name=transportation', 'https://startupnews.com.au/?s=transport']
-news_selector = ['.post', '.tdb_module_loop ', '.content', 'article', 'item-details']
-error_selector = ['.inner_wrapper > .error_box', '.error404', '.ais-Hits--empty', '.error404', '.error404']
-title_selector = ['h5 > a', 'h3 > a', 'h2 > a', 'h2 > a', 'h3 > a']
-date_selector = ['.post_info_date', '.entry-date', '.date', '.published', '.entry-date']
+url = ['https://techstartups.com/category/latest-technology-news/transportation/', 'https://www.eu-startups.com/?s=transport', 'https://startupnews.com.au/?s=transport']
 
+news_selector = ['.post', '.tdb_module_loop ', 'item-details']
+error_selector = ['.inner_wrapper > .error_box', '.error404', '.error404']
+title_selector = ['h5 > a', 'h3 > a', 'h3 > a']
+date_selector = ['.post_info_date', '.entry-date', '.entry-date']
 
 
 # Формирование отчёта из данных от парсеров
@@ -46,11 +46,11 @@ def parser(url, transport_st):
                     u = f'https://techstartups.com/category/latest-technology-news/transportation/page/{page}/'
                 elif ind == 1:
                     u = f'https://www.eu-startups.com/page/{page}/?s=transport'
+                # elif ind == 2:
+                #     u = f'https://inc42.com/buzz/?s=transport%20startup&page={page}'
+                # elif ind == 3:
+                #     u = f'https://www.geekwire.com/page/{page}/?s=transport&orderby=relevance&order=DESC&post_type=post%2Cpage%2Cdevblog%2Cgeekwire_event%2Cgeekwire_picks%2Cspecial_coverage%2Csponsor_post&category_name=transportation'
                 elif ind == 2:
-                    u = f'https://inc42.com/buzz/?s=transport%20startup&page={page}'
-                elif ind == 3:
-                    u = f'https://www.geekwire.com/page/{page}/?s=transport&orderby=relevance&order=DESC&post_type=post%2Cpage%2Cdevblog%2Cgeekwire_event%2Cgeekwire_picks%2Cspecial_coverage%2Csponsor_post&category_name=transportation'
-                elif ind == 4:
                     u = f'https://startupnews.com.au/page/{page}/?s=transport'
             r = req.get(u)
             # print()
@@ -91,3 +91,4 @@ def parser(url, transport_st):
             else:
                 break
 
+parser(url, transport_st)

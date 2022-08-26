@@ -28,13 +28,38 @@ def get_best(start_date: str, final_date: str, report_path = r'./report_data.csv
     # Словарь 10 лучших, для визуализации на фронтенде
     return stats
 
+
+
+# Только для теста update_report
+'''
+data = ChainMap(
+[
+  {
+    "company_name": "compan 1",
+    "mentioned_at": "22.11.2004",
+  },
+  {
+    "company_name": "company 2",
+    "mentioned_at": "23.11.2004",
+  },
+  {
+    "company_name": "company 3",
+    "mentioned_at": "24.11.2004",
+  }
+]
+)
+
+report_path = r'G:\GitHub repos\DriveHack\report_data.csv'
+'''
+
 # Только для теста get_best
 '''
 '''
-report_path = r'./report_data.csv'
 
-start_date = "2020-01-01"
-final_date = "2026-01-01"
 
-print(get_best(start_date, final_date, report_path))
+# report_path = r'./report_data.csv'
 
+# start_date = "2000-01-01"
+# final_date = "2012-01-01"
+
+# print(get_best(start_date, final_date, report_path))
