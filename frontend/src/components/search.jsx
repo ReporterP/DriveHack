@@ -5,12 +5,8 @@ import DatePicker from "react-datepicker";
 import dateFormat from "dateformat";
 import {startOfWeek, endOfWeek} from 'date-fns'
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom';
 
 const Search = props => {
-
-    const navigate = useNavigate()
-
     const [dateRange, setDateRange] = useState([
         startOfWeek(new Date(), {weekStartsOn: 6}), 
         endOfWeek(new Date(), {weekStartsOn: 6})
@@ -30,13 +26,12 @@ const Search = props => {
     const handleSubmit = e => {
         e.preventDefault();
 
-        navigate('/#tables')
-
         var data = {
             "start_date": formData(startDate),
             "final_date": formData(endDate)
         }
-        console.log(data)
+
+        console.log(data    )
 
         axios.post('https://tim-fs.herokuapp.com/api/get_data', data, {
             headers: {
@@ -48,7 +43,7 @@ const Search = props => {
 
     return (
         <div className="search d-flex justify-content-center" style={{width: "100%"}}>
-            <Form onSubmit={handleSubmit}>
+            <Form>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                     <Form.Label>Выберете даты:</Form.Label>
                     <DatePicker
@@ -63,9 +58,7 @@ const Search = props => {
                     withPortal
                     />
                 </Form.Group>
-                <Button className="formBtn" type="submit">
-                        Поиск
-                </Button>
+                <Button className="formBtn" onClick={handleSubmit}>Поиск</Button>
             </Form>
         </div>
     );

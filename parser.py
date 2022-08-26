@@ -4,6 +4,18 @@ from datetime import datetime
 import pandas as pd  # для создания/дополнения файла отчёта через DataFrames
 import re
 
+
+transport_st = []
+
+# resourses
+url = ['https://techstartups.com/category/latest-technology-news/transportation/', 'https://www.eu-startups.com/?s=transport', 'https://startupnews.com.au/?s=transport']
+
+news_selector = ['.post', '.tdb_module_loop ', 'item-details']
+error_selector = ['.inner_wrapper > .error_box', '.error404', '.error404']
+title_selector = ['h5 > a', 'h3 > a', 'h3 > a']
+date_selector = ['.post_info_date', '.entry-date', '.entry-date']
+
+
 # Формирование отчёта из данных от парсеров
 def update_report(data: dict, report_path = r'./report_data.csv'):
     '''Extend existing report or create a new one'''
@@ -23,62 +35,47 @@ def update_report(data: dict, report_path = r'./report_data.csv'):
     # Т.е. парсер прекратил свою работу.
     report_data.to_csv('report_data.csv', index=False)
 
-
-transport_st = []
-result = []
-other_st = []
-
-# load the list of transport startups
-correct_list = 'https://transport.startups-list.com/'
-
-# resourses
-url = ['https://techcrunch.com/category/startups/', 'https://techstartups.com/category/latest-technology-news/transportation/', 'https://www.eu-startups.com/?s=transport']
-
-def list_load(url):
-    r = req.get(url)
-    html = bs(r.text, 'html.parser')
-    for new in html.select('.card'):
-        name = new.select('h1')[0].text.strip()
-        transport_st.append(name)
-
-
-# parser
-def parser(url, transport_st, result, other_st):
-    list_load(correct_list)
-
+# Парсинг данных в DataFrame с сохранением в csv по завершению
+def parser(url, transport_st):
     for u in url:
-        
-        # if url.index(u) == 0:
-            # r = req.get(u)
-            # html = bs(r.text, 'html.parser')
-        #     for new in html.select('.post-block'):
-        #         title = new.select('h2 > a')[0].text.strip()
-        #         date = new.select('time')[0].text.strip()
-        #         print(new)
-        #         break
-        
-        if url.index(u) == 1:
-            for page in range(1, 100):
-                if page >= 2:
+        ind = url.index(u)
+        page = 1
+        while True:
+            if page >= 2:
+                if ind == 0:
                     u = f'https://techstartups.com/category/latest-technology-news/transportation/page/{page}/'
-                r = req.get(u)
-                html = bs(r.text, 'html.parser')
-                for new in html.select('.post'):
-                    title = new.select('h5 > a')[0].text.strip()
-                    date = new.select('.post_info_date')[0].text.strip()
+                elif ind == 1:
+                    u = f'https://www.eu-startups.com/page/{page}/?s=transport'
+                # elif ind == 2:
+                #     u = f'https://inc42.com/buzz/?s=transport%20startup&page={page}'
+                # elif ind == 3:
+                #     u = f'https://www.geekwire.com/page/{page}/?s=transport&orderby=relevance&order=DESC&post_type=post%2Cpage%2Cdevblog%2Cgeekwire_event%2Cgeekwire_picks%2Cspecial_coverage%2Csponsor_post&category_name=transportation'
+                elif ind == 2:
+                    u = f'https://startupnews.com.au/page/{page}/?s=transport'
+            r = req.get(u)
+            # print()
+            # print(u)
+            # print()
+            html = bs(r.text, 'html.parser')
+            if len(html.select(error_selector[ind])) == 0:
+                
+                for new in html.select(news_selector[ind]):
+                    title = new.select(title_selector[ind])[0].text.strip()
+                    date = new.select(date_selector[ind])[0].text.strip()
                     date = date.replace(',', '')
-                    date = datetime.strptime('April 25 2022', '%B %d %Y')
+                    date = datetime.strptime(date, '%B %d %Y')
                     date = date.strftime("%Y-%m-%d")
-                    # for tr in transport_st:
-                    #     if tr in title:
-                    #         result.append({"company_name": tr, "mentioned_at": date})
-                    #         # print({"company_name": tr, "mentioned_at": date})
-                    #         break
+
+                    for tr in transport_st:
+                        if tr in title:
+                            # print(f't"{title}" tr"{tr}"')
+                            update_report({"company_name": tr, "mentioned_at": date})
                     if 'startup' in title:
-                        if '$' in title:
+                        if '$' in title or '€' in title:
                             # print(title)
-                            find_str = re.findall(r'startup(.*?)[$]', title)
+                            find_str = re.findall(r'startup(.*?)[$€]', title)
                             if len(find_str):
+                                # print(title)
                                 find_str = find_str[0].replace('\xa0', ' ').strip().split(' ')
                                 # print(f'"{find_str}"')
                                 w = 0
@@ -86,17 +83,12 @@ def parser(url, transport_st, result, other_st):
                                 while find_str[w][0].isupper():
                                     res += f'{find_str[w]} '
                                     w +=1
-                            res = res.strip()        
-                            update_report({"company_name": res, "mentioned_at": date})
+                                res = res.strip()
+                                if len(res):            
+                                    update_report({"company_name": res, "mentioned_at": date})
+                                    transport_st.append(res)
+                page +=1
+            else:
+                break
 
-        # if url.index(u) == 2:
-        #     for new in html.select('.td-module-meta-info'):
-        #         title = new.select('h3 > a')[0].text.strip()
-        #         date = new.select('.entry-date')[0].text.strip()
-        #         print(title, data)
-        #         break
-            
-
-# data_parser = parser(url, transport_st, result, other_st)
-parser(url, transport_st, result, other_st)
-# print(data_parser)
+parser(url, transport_st)

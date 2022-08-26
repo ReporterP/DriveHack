@@ -1,6 +1,5 @@
 import React from 'react';
 import Table from 'react-bootstrap/Table';
-import DownloadInput from './DownloadInput';
 
 const Tables = props => {
     return (
@@ -20,7 +19,6 @@ const Tables = props => {
                     </tbody>
                 </Table>
             }
-        <DownloadInput/>
         </div>
     );
 }
