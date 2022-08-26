@@ -1,9 +1,6 @@
-from collections import ChainMap  # для обработки данных от парсеров сайта
 import pandas as pd  # для создания/дополнения файла отчёта через DataFrames
 
 from datetime import date
-
-import parser as par
 
 # Формирование отчёта из данных от парсеров
 
