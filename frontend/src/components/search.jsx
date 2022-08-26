@@ -1,41 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, forwardRef } from "react";
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import DatePicker from "react-datepicker";
 import dateFormat from "dateformat";
 import {startOfWeek, endOfWeek} from 'date-fns'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom';
 
-const Search = () => {
+const Search = props => {
+
+    const navigate = useNavigate()
+
     const [dateRange, setDateRange] = useState([
         startOfWeek(new Date(), {weekStartsOn: 6}), 
         endOfWeek(new Date(), {weekStartsOn: 6})
     ]);
+    
     const [startDate, endDate] = dateRange;
+
+    const CustomInput = forwardRef(({ value, onClick }, ref) => (
+        <Button className="custom-input" onClick={onClick} ref={ref}>
+            {value}
+        </Button>
+        ));
+
 
     const formData = data => dateFormat(data, "isoDateTime").split("T")[0]
 
     const handleSubmit = e => {
-        e.preventDefault();  
+        e.preventDefault();
+
+        navigate('/#tables')
+
         var data = {
             "start_date": formData(startDate),
             "final_date": formData(endDate)
         }
         console.log(data)
 
-        // axios.post('http://127.0.0.1:5000/api/get_csv', data, {
-        //     headers: {
-        //         "Access-Control-Allow-Origin": "*",
-        //         'Content-Type': "multipart/from-data"
-        //     }
-        // }).then(res =>  console.log(res.data)).catch(err => console.log(err))
+        axios.post('http://127.0.0.1:5000/api/get_data', data, {
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                'Content-Type': "application/json"
+            }
+        }).then(res => props.data(res.data)).catch(err => console.log(err))
     }
 
     return (
-        <div className='search'>
+        <div className="search d-flex justify-content-center" style={{width: "100%"}}>
             <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                    <Form.Label>Выберете даты</Form.Label>
+                    <Form.Label>Выберете даты:</Form.Label>
                     <DatePicker
                     selectsRange={true}
                     startDate={startDate}
@@ -43,12 +58,13 @@ const Search = () => {
                     onChange={(update) => {
                         setDateRange(update);
                     }}
+                    customInput={<CustomInput />}
                     dateFormat="dd.MM.yyyy"
                     withPortal
                     />
                 </Form.Group>
-                <Button variant="primary" type="submit">
-                    Submit
+                <Button className="formBtn" type="submit">
+                        Поиск
                 </Button>
             </Form>
         </div>
