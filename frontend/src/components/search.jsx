@@ -3,13 +3,13 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import DatePicker from "react-datepicker";
 import dateFormat from "dateformat";
-import {startOfWeek, endOfWeek} from 'date-fns'
+import {previousSaturday, previousFriday } from 'date-fns'
 import axios from 'axios'
 
 const Search = props => {
     const [dateRange, setDateRange] = useState([
-        startOfWeek(new Date(), {weekStartsOn: 6}), 
-        endOfWeek(new Date(), {weekStartsOn: 6})
+        previousSaturday(previousSaturday(new Date())), 
+        previousFriday(new Date(), {weekStartsOn: 6})
     ]);
     
     const [startDate, endDate] = dateRange;
@@ -31,7 +31,12 @@ const Search = props => {
             "final_date": formData(endDate)
         }
 
-        console.log(data    )
+        axios.get('https://tim-fs.herokuapp.com/api/get_csv',{
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                'Content-Type': "application/json"
+            }
+        }).then(res => props.search(res.data)).catch(err => console.log(err))
 
         axios.post('https://tim-fs.herokuapp.com/api/get_data', data, {
             headers: {
@@ -39,6 +44,8 @@ const Search = props => {
                 'Content-Type': "application/json"
             }
         }).then(res => props.data(res.data)).catch(err => console.log(err))
+
+        props.download(true)
     }
 
     return (

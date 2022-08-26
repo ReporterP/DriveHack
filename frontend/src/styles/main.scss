@@ -14,7 +14,9 @@ html {
 header {
     width: 100%;
     position: fixed;
+    z-index: 999999999999999999999999;
 }
+
 
 nav {
     background-color: $base-color;

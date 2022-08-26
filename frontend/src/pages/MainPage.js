@@ -7,12 +7,14 @@ import DownloadInput from '../components/DownloadInput';
 const MainPage = () => {
 
     const [data, setdata] = useState({})
+    const [Download, setDownload] = useState(false)
+    const [transactionData, setTransactionData] = useState("")
 
     return (
         <div className='mainPage'>
-            <DownloadInput/>
+            {Download && <DownloadInput search={transactionData}/>}
             <Container>
-                <Search data={setdata} />
+                <Search data={setdata} download={setDownload} search={setTransactionData}/>
                 <Tables data={data}/>
             </Container>
         </div>
