@@ -16,9 +16,14 @@ app = Flask(__name__, static_folder="build", static_url_path="")
 
 cors = CORS(app)
 
-@app.route('/api/get_csv', methods=['POST'])
+@app.route('/api/get_csv', methods=['GET'])
 @cross_origin()
 def get_csv():
+    return 0
+
+@app.route('/api/get_data', methods=['POST'])
+@cross_origin()
+def get_data():
     req = request.get_json()
     start_date = req.get("start_date")
     final_date = req.get("final_date")
