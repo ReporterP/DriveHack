@@ -4,24 +4,13 @@ from datetime import datetime
 import pandas as pd  # для создания/дополнения файла отчёта через DataFrames
 import re
 
-# Формирование отчёта из данных от парсеров
-def update_report(data: dict, report_path = r'./report_data.csv'):
-    '''Extend existing report or create a new one'''
-    if report_path == "":
-        report_data = pd.DataFrame(
-            columns=['company_name', 'mentioned_times'])
-    else:
-        report_data = pd.read_csv(report_path)
+# TODO: Оптимизация парсера
+# Парсер возращает новый DF, что содержит собранные данные.
+# Затем производится конкатенация полученного DF с DF из файла хранилища.
+# Результирующий DF сохраняется в csv.
 
-    # Дополнение отчёта данными
-    # Словарь в DF, а DF + DF
-    # print(pd.DataFrame(data.items())) # , ignore_index=True
-    report_data = pd.concat([report_data, pd.DataFrame([data.values()],columns=['company_name', 'mentioned_times'] )])
 
-    # TODO:
-    # Для оптимизации имеет смысл делать сохранение в csv, только тогда, когда получен итоговый DF
-    # Т.е. парсер прекратил свою работу.
-    report_data.to_csv('report_data.csv', index=False)
+
 
 
 transport_st = []
@@ -42,7 +31,7 @@ def list_load(url):
         transport_st.append(name)
 
 
-# parser
+# Парсинг данных в DataFrame с сохранением в csv по завершению
 def parser(url, transport_st, result, other_st):
     list_load(correct_list)
 
@@ -85,9 +74,11 @@ def parser(url, transport_st, result, other_st):
                                 res = ''
                                 while find_str[w][0].isupper():
                                     res += f'{find_str[w]} '
-                                    w +=1
-                            res = res.strip()        
-                            update_report({"company_name": res, "mentioned_at": date})
+                                    w += 1
+                            res = res.strip()
+
+                            report_data = pd.concat([report_data, pd.DataFrame([data.values()], columns=['company_name',
+                                                                                                         'mentioned_times'])])
 
         # if url.index(u) == 2:
         #     for new in html.select('.td-module-meta-info'):
@@ -95,8 +86,18 @@ def parser(url, transport_st, result, other_st):
         #         date = new.select('.entry-date')[0].text.strip()
         #         print(title, data)
         #         break
-            
 
-# data_parser = parser(url, transport_st, result, other_st)
+
+
 parser(url, transport_st, result, other_st)
-# print(data_parser)
+
+# Загрузка имеющегося отчёта в DF, для дополнения
+report_path = r'G:\GitHub repos\DriveHack\report_data.csv'
+report_data = pd.read_csv(report_path)
+
+# Дополнение DF данными из DF с результатами парсинга
+
+
+
+# Сохранение результирующего DF в csv
+
