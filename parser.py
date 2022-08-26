@@ -15,6 +15,9 @@ import re
 
 # Парсинг данных в DataFrame с сохранением в csv по завершению
 def parser(url, transport_st):
+    # DF заполняемый парсером
+    parsed_data = pd.DataFrame(columns=['company_name', 'mentioned_times'])
+
     # list_load(correct_list)
     for u in url:
         ind = url.index(u)
@@ -58,10 +61,13 @@ def parser(url, transport_st):
                                     w += 1
                                 res = res.strip()
                                 if len(res):
-                                    
-                                    print({"company_name": res, "mentioned_at": date})
+                                    # Дополнение отчёта данными
+                                    startup = {"company_name": res, "mentioned_at": date}
+                                    parsed_data = pd.concat([parsed_data, pd.DataFrame([startup.values()],
+                                                                                       columns=['company_name',
+                                                                                                'mentioned_times'])])
                                     transport_st.append(res)
-                page += 1
+                page += 10
             else:
                 break
 
@@ -73,6 +79,8 @@ def parser(url, transport_st):
         #         date = new.select('time')[0].text.strip()
         #         print(new)
         #         break
+
+    return parsed_data
 
 
 transport_st = []
@@ -86,20 +94,15 @@ error_selector = ['.inner_wrapper > .error_box', '.error404']
 title_selector = ['h5 > a', 'h3 > a']
 date_selector = ['.post_info_date', '.entry-date']
 
-parser(url, transport_st)
-
-
-# TODO: Оптимизация парсера
 # Парсер возращает новый DF, что содержит собранные данные.
-# Затем производится конкатенация полученного DF с DF из файла хранилища.
-# Результирующий DF сохраняется в csv.
+parsed_data = parser(url, transport_st)
 
-"""
-"""
 # Загрузка имеющегося отчёта в DF, для дополнения
 report_path = r'G:\GitHub repos\DriveHack\report_data.csv'
 report_data = pd.read_csv(report_path)
 
-# Дополнение DF данными из DF с результатами парсинга
+# Дополнение DF отчёта данными из DF с результатами парсинга
+report_data = pd.concat([report_data, parsed_data])
 
 # Сохранение результирующего DF в csv
+report_data.to_csv('report_data.csv', index=False)

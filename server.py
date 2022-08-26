@@ -5,7 +5,7 @@ import os
 from dotenv import dotenv_values
 
 # import database
-import stats as st
+import get_best as st
 
 config = dotenv_values(".env")
 
