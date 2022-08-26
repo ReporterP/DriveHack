@@ -15,7 +15,7 @@ def get_best(start_date: str, final_date: str, report_path = r'./report_data.csv
         if start_date <= date.fromisoformat(row["mentioned_times"]) <= final_date:
             stats[row['company_name']] = stats.get(row['company_name'], 0) + 1
 
-    stats = sorted(stats.items(), key=lambda x: x[1])
+    stats = sorted(stats.items(), key=lambda x: x[1], reverse=True)
 
     if len(stats) > 10:
         stats = dict(stats[:10])
@@ -33,8 +33,8 @@ def get_best(start_date: str, final_date: str, report_path = r'./report_data.csv
 '''
 report_path = r'./report_data.csv'
 
-start_date = "2000-01-01"
-final_date = "2012-01-01"
+start_date = "2020-01-01"
+final_date = "2026-01-01"
 
 print(get_best(start_date, final_date, report_path))
 
